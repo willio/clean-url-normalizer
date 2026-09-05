@@ -2,7 +2,26 @@
     "name": "willio/clean-url-normalizer",
     "description": "Preserve original URLs while producing conservative, policy-driven clean and comparison forms.",
     "type": "library",
-    "license": "proprietary",
+    "license": "MIT",
+    "homepage": "https://github.com/willio/clean-url-normalizer",
+    "authors": [
+        {
+            "name": "Willio",
+            "homepage": "https://github.com/willio"
+        }
+    ],
+    "keywords": [
+        "url",
+        "url-normalization",
+        "url-cleaning",
+        "tracking-parameters",
+        "url-comparison",
+        "deduplication"
+    ],
+    "support": {
+        "issues": "https://github.com/willio/clean-url-normalizer/issues",
+        "source": "https://github.com/willio/clean-url-normalizer"
+    },
     "require": {
         "php": ">=8.1"
     },

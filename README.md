@@ -16,6 +16,16 @@ The library keeps the original input byte-for-byte in `CleanUrlResult::originalU
 
 It does **not** claim that two URLs with the same key are universally equivalent. Comparison behavior is a policy heuristic suitable only when its assumptions fit the caller's domain.
 
+## Installation
+
+After the package is published, install it with Composer:
+
+```bash
+composer require willio/clean-url-normalizer
+```
+
+The package has no runtime dependencies beyond PHP 8.1 or newer.
+
 ## Conservative defaults
 
 `UrlCleaningPolicy::conservative()`:
@@ -75,11 +85,11 @@ This package performs no network requests. It does not resolve redirects, DNS, H
 
 Consumers that fetch URLs must apply their own network and SSRF controls separately.
 
-## Provenance and license status
+## Provenance and license
 
 The comparison behavior was extracted from Linkee's first-party `app/core/import-url.php` implementation, introduced in Linkee commit `a0e10e5aeb16bb64a0b281744b3972662e291a9f` (`fix(import): add canonical URL comparison and link dedup`). Linkee itself currently declares a proprietary license.
 
-MIT is proposed for this standalone package, but relicensing is not yet approved and this draft intentionally contains no `LICENSE` file. The local-only Linkee document `packages/url-equivalence/README.md` was not available through the connected repository source during extraction and remains a provenance review gate before relicensing or publication.
+This standalone package is licensed under the MIT License. The original Linkee application remains proprietary; this repository contains only the reusable URL-cleaning and comparison layer, its tests, and its documentation. The extraction contract was reviewed against Linkee's internal URL Equivalence design draft, which is not included here.
 
 ## Development
 
