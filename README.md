@@ -1,6 +1,12 @@
 # Clean URL Normalizer
 
-Preserve the URL you received. Produce a conservative, policy-driven clean form and a deterministic comparison key when it is safe to do so.
+[English](README.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-CN.md)
+
+`README.md` is the canonical technical documentation. The linked translations mirror its contract and examples.
+
+Remove tracking noise from the clean URL without losing the URL you received or the tokens your workflow needs.
+
+By default, tracking parameters such as `utm_source`, `fbclid`, and `gclid` are removed from the clean URL and comparison key. The original input is always preserved byte-for-byte—including `utm_source`—and unknown, affiliate, and referral parameters remain available in the clean form.
 
 `willio/clean-url-normalizer` is a small PHP 8.1+ library for URL cleaning and comparison. It is intended for import pipelines, display preparation, optional deduplication, and similar workflows where mutating the caller's original URL would be undesirable.
 
@@ -14,11 +20,17 @@ The library keeps the original input byte-for-byte in `CleanUrlResult::originalU
 - warnings when the library deliberately avoids asserting an equivalence;
 - validation errors for unsupported or malformed input.
 
+This gives callers three useful levels of information:
+
+- `originalUrl()` is the exact URL received, including tracking and attribution data;
+- `cleanUrl()` is a readable URL with configured tracking noise removed while meaningful query parameters remain;
+- `comparisonKey()` is a deterministic key for cautious matching or deduplication.
+
 It does **not** claim that two URLs with the same key are universally equivalent. Comparison behavior is a policy heuristic suitable only when its assumptions fit the caller's domain.
 
 ## Installation
 
-After the package is published, install it with Composer:
+Once the package is available through Packagist, install it with Composer:
 
 ```bash
 composer require willio/clean-url-normalizer
@@ -61,6 +73,44 @@ $result->warnings();
 $result->validationErrors();
 $result->isValid();
 ```
+
+### Common links, before and after
+
+The normalizer does not need to know what Google Maps, YouTube, Instagram, or an affiliate network means. It removes only the parameters covered by policy and keeps the destination parameters intact.
+
+| Common input | `cleanUrl()` | `comparisonKey()` | Useful outcome |
+| --- | --- | --- | --- |
+| `https://www.google.com/maps/search/?api=1&query=Monas%2C+Jakarta&utm_source=share` | `https://www.google.com/maps/search/?api=1&query=Monas%2C+Jakarta` | `https://www.google.com/maps/search?api=1&query=Monas%2C+Jakarta` | Removes the sharing tracker while retaining the Maps destination and query. |
+| `https://www.youtube.com/watch?v=dQw4w9WgXcQ&utm_source=share` | `https://www.youtube.com/watch?v=dQw4w9WgXcQ` | `https://www.youtube.com/watch?v=dQw4w9WgXcQ` | Keeps the video ID while removing campaign noise. |
+| `https://www.instagram.com/p/ABC123/?igshid=tracking` | `https://www.instagram.com/p/ABC123/` | `https://www.instagram.com/p/ABC123` | Keeps the post URL and makes the trailing slash irrelevant for comparison. |
+| `https://store.example.com/product?ref=creator&aff_id=abc&utm_source=instagram` | `https://store.example.com/product?ref=creator&aff_id=abc` | `https://store.example.com/product?aff_id=abc&ref=creator` | Preserves referral and affiliate tokens while removing `utm_source`. |
+
+In each case, `originalUrl()` still returns the complete input exactly as received. This lets an importer store the source URL, show a cleaner link, and compare later variants without silently throwing away attribution data.
+
+### Keep UTM parameters when the clean form needs them
+
+UTM parameters are removable by default, not forbidden. If the clean URL must retain `utm_source` or other UTM values, configure the policy explicitly and continue stripping only the trackers you do not want:
+
+```php
+use Willio\CleanUrlNormalizer\CleanUrlNormalizer;
+use Willio\CleanUrlNormalizer\UrlCleaningPolicy;
+
+$policy = new UrlCleaningPolicy(
+    trackingParameters: ['fbclid', 'gclid'],
+    stripUtmParameters: false,
+);
+
+$result = (new CleanUrlNormalizer($policy))->clean(
+    'https://example.com/article?utm_source=newsletter&fbclid=tracking'
+);
+
+$result->originalUrl();       // https://example.com/article?utm_source=newsletter&fbclid=tracking
+$result->cleanUrl();          // https://example.com/article?utm_source=newsletter
+$result->comparisonKey();     // https://example.com/article?utm_source=newsletter
+$result->removedParameters(); // ['fbclid']
+```
+
+This policy model is useful for campaign reporting, affiliate attribution, import pipelines, display/share links, and cautious URL deduplication. The library never makes a network request or claims that matching comparison keys prove universal destination equivalence.
 
 Host aliases are opt-in because provider/domain aliases are contextual rather than universal:
 

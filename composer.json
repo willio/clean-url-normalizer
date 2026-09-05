@@ -1,6 +1,6 @@
 {
     "name": "willio/clean-url-normalizer",
-    "description": "Preserve original URLs while producing conservative, policy-driven clean and comparison forms.",
+    "description": "Remove tracking noise while preserving original URLs and attribution tokens.",
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/willio/clean-url-normalizer",
@@ -21,6 +21,13 @@
     "support": {
         "issues": "https://github.com/willio/clean-url-normalizer/issues",
         "source": "https://github.com/willio/clean-url-normalizer"
+    },
+    "extra": {
+        "descriptions": {
+            "en": "Remove tracking noise from clean URLs while preserving original URLs and attribution tokens.",
+            "id": "Bersihkan URL dari pelacak tanpa kehilangan URL asli dan token atribusi.",
+            "zh-CN": "清理 URL 中的跟踪噪声，同时保留原始 URL 和归因标记。"
+        }
     },
     "require": {
         "php": ">=8.1"
